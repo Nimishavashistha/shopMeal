@@ -19,4 +19,12 @@ abstract class RoutesManagement {
   static void goToOrderScreen() {
     Get.toNamed<void>(AppRoutes.orderedItems);
   }
+
+  static void goToUserProductsScreen() {
+    Get.toNamed<void>(AppRoutes.userProducts);
+  }
+
+  static void goToEditProductsScreen() {
+    Get.toNamed<void>(AppRoutes.editProducts);
+  }
 }

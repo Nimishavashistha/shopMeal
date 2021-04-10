@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
-import 'package:shop_app/app/data/models/cart_item.dart';
 import 'package:shop_app/app/data/models/product.dart';
 
 class ProductController extends GetxController {
-  var productsList = [].obs;
+  List<Product> productsList = [];
+  var showFavPro = false;
+  var isFavourite = false;
 
   @override
   void onInit() {
@@ -11,12 +12,27 @@ class ProductController extends GetxController {
     super.onInit();
   }
 
+  void toggleMenuItems() {
+    showFavPro = !showFavPro;
+    update();
+  }
+
+  void toggleFavouriteStatus(String id) {
+    productsList.firstWhere((prod) => prod.id == id).isFavorite =
+        !productsList.firstWhere((prod) => prod.id == id).isFavorite;
+    update();
+  }
+
   List<dynamic> get favouriteItems {
-    return productsList.where((prodItem) => prodItem.isFavorite.value).toList();
+    return productsList.where((prodItem) => prodItem.isFavorite).toList();
+  }
+
+  Product findById(String id) {
+    return productsList.firstWhere((prod) => prod.id == id);
   }
 
   void fetchProducts() {
-    final List<Product> loadedProducts = [
+    productsList = [
       Product(
         id: 'p1',
         title: 'Red Shirt',
@@ -50,6 +66,6 @@ class ProductController extends GetxController {
             'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
       ),
     ];
-    productsList.value = loadedProducts;
+    update();
   }
 }

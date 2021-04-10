@@ -4,34 +4,35 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 import 'package:shop_app/app/data/models/orders.dart';
+import 'package:shop_app/app/modules/orders/controllers/order_controller.dart';
 
 class OrderItem extends StatelessWidget {
   final Order order;
 
   OrderItem({Key key, this.order}) : super(key: key);
-  var _expanded = false.obs;
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(10),
-      child: Column(
-        children: [
-          ListTile(
-            title: Text("\$${order.amount}"),
-            subtitle:
-                Text(DateFormat('dd/MM/yyyy hh:mm').format(order.dateTime)),
-            trailing: IconButton(
-              icon: Icon(Icons.expand_more),
-              onPressed: () {
-                _expanded.toggle();
-                print("expanded value = ${_expanded.value}");
-              },
+        margin: EdgeInsets.all(10),
+        child: GetBuilder<OrderController>(
+          builder: (controller) => Column(children: [
+            ListTile(
+              title: Text("\$${order.amount}"),
+              subtitle:
+                  Text(DateFormat('dd/MM/yyyy hh:mm').format(order.dateTime)),
+              trailing: IconButton(
+                icon: Icon(controller.expanded
+                    ? Icons.expand_less
+                    : Icons.expand_more),
+                onPressed: () {
+                  controller.toggleExpand();
+                  print("expanded value = ${controller.expanded}");
+                },
+              ),
             ),
-          ),
-          Obx(() {
-            if (_expanded.value) {
-              return Container(
+            if (controller.expanded)
+              Container(
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
                 height: min(order.products.length * 20.0 + 10, 100),
                 child: ListView(
@@ -55,13 +56,8 @@ class OrderItem extends StatelessWidget {
                           ))
                       .toList(),
                 ),
-              );
-            } else {
-              return Container();
-            }
-          })
-        ],
-      ),
-    );
+              )
+          ]),
+        ));
   }
 }

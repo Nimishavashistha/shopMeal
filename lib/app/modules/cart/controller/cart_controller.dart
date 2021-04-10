@@ -2,13 +2,10 @@ import 'package:get/get.dart';
 import 'package:shop_app/app/data/models/cart_item.dart';
 
 class CartController extends GetxController {
-  var cartItems = {}.obs;
-  var _items = {};
-
-  var totalcartItems = 0.obs;
+  var cartItems = {};
 
   get itemCount {
-    return totalcartItems;
+    return cartItems.length;
   }
 
   get totalAmount {
@@ -20,8 +17,8 @@ class CartController extends GetxController {
   }
 
   void addItem(String productId, double price, String title) {
-    if (_items.containsKey(productId)) {
-      _items.update(
+    if (cartItems.containsKey(productId)) {
+      cartItems.update(
           productId,
           (existingCartItem) => CartItem(
               id: existingCartItem.id,
@@ -29,22 +26,39 @@ class CartController extends GetxController {
               quantity: existingCartItem.quantity + 1,
               price: existingCartItem.price));
     } else {
-      _items.putIfAbsent(
+      cartItems.putIfAbsent(
           productId,
           () =>
               CartItem(id: productId, title: title, quantity: 1, price: price));
     }
-    totalcartItems.value = _items.length;
-    cartItems.value = _items;
+    update();
+  }
+
+  void removeSingleItem(String productId) {
+    if (!cartItems.containsKey(productId)) {
+      return;
+    }
+    if (cartItems[productId].quantity > 1) {
+      cartItems.update(
+          productId,
+          (existingCartItem) => CartItem(
+              id: existingCartItem.id,
+              title: existingCartItem.title,
+              quantity: existingCartItem.quantity - 1,
+              price: existingCartItem.price));
+    } else {
+      cartItems.remove(productId);
+    }
+    update();
   }
 
   void clear() {
-    cartItems.value = {};
-    _items = {};
+    cartItems = {};
+    update();
   }
 
   void removeItem(String productId) {
-    _items.remove(productId);
     cartItems.remove(productId);
+    update();
   }
 }

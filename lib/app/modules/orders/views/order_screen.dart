@@ -8,14 +8,15 @@ class OrderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Your Orders"),
-      ),
-      drawer: AppDrawer(),
-      body: Obx(() => ListView.builder(
-          itemCount: Get.find<OrderController>().orderItems.length,
-          itemBuilder: (ctx, index) =>
-              OrderItem(order: Get.find<OrderController>().orderItems[index]))),
-    );
+        appBar: AppBar(
+          title: Text("Your Orders"),
+        ),
+        drawer: AppDrawer(),
+        body: GetBuilder<OrderController>(
+          builder: (controller) => ListView.builder(
+              itemCount: controller.orderItems.length,
+              itemBuilder: (ctx, index) =>
+                  OrderItem(order: controller.orderItems[index])),
+        ));
   }
 }

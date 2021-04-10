@@ -9,26 +9,27 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Your Cart"),
-      ),
-      body: Column(
-        children: [
-          Card(
-            margin: EdgeInsets.all(15),
-            child: Padding(
-              padding: EdgeInsets.all(8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    "Total",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Spacer(),
-                  Obx(() => Chip(
+        appBar: AppBar(
+          title: Text("Your Cart"),
+        ),
+        body: GetBuilder<CartController>(
+          builder: (controller) => Column(
+            children: [
+              Card(
+                margin: EdgeInsets.all(15),
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        "Total",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Spacer(),
+                      Chip(
                         label: Text(
-                          "\$ ${Get.find<CartController>().totalAmount.toStringAsFixed(2)}",
+                          "\$ ${controller.totalAmount.toStringAsFixed(2)}",
                           style: TextStyle(
                             color: Theme.of(context)
                                 .primaryTextTheme
@@ -37,58 +38,42 @@ class CartScreen extends StatelessWidget {
                           ),
                         ),
                         backgroundColor: Theme.of(context).primaryColor,
-                      )),
-                  TextButton(
-                    onPressed: () {
-                      Get.find<OrderController>().addOrder(
-                          Get.find<CartController>().cartItems.values.toList(),
-                          Get.find<CartController>().totalAmount);
-                      Get.find<CartController>().clear();
-                    },
-                    child: Text(
-                      "ORDER NOW",
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Get.find<OrderController>().addOrder(
+                              controller.cartItems.values.toList(),
+                              controller.totalAmount);
+                          controller.clear();
+                        },
+                        child: Text(
+                          "ORDER NOW",
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Expanded(
-              child: Obx(
-            () => ListView.builder(
-              itemCount: Get.find<CartController>().cartItems.length,
-              itemBuilder: (ctx, index) => CartItem(
-                id: Get.find<CartController>()
-                    .cartItems
-                    .values
-                    .toList()[index]
-                    .id,
-                productId:
-                    Get.find<CartController>().cartItems.keys.toList()[index],
-                title: Get.find<CartController>()
-                    .cartItems
-                    .values
-                    .toList()[index]
-                    .title,
-                price: Get.find<CartController>()
-                    .cartItems
-                    .values
-                    .toList()[index]
-                    .price,
-                quantity: Get.find<CartController>()
-                    .cartItems
-                    .values
-                    .toList()[index]
-                    .quantity,
+              SizedBox(
+                height: 10,
               ),
-            ),
-          ))
-        ],
-      ),
-    );
+              Expanded(
+                child: ListView.builder(
+                  itemCount: controller.cartItems.length,
+                  itemBuilder: (ctx, index) => CartItem(
+                    id: controller.cartItems.values.toList()[index].id,
+                    productId: controller.cartItems.keys.toList()[index],
+                    title: controller.cartItems.values.toList()[index].title,
+                    price: controller.cartItems.values.toList()[index].price,
+                    quantity:
+                        controller.cartItems.values.toList()[index].quantity,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ));
   }
 }

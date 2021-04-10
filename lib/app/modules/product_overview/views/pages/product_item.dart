@@ -25,21 +25,35 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         footer: GridTileBar(
-          leading: Obx(() => IconButton(
-                color: Theme.of(context).accentColor,
-                icon: product.isFavorite.value
-                    ? Icon(Icons.favorite_rounded)
-                    : Icon(Icons.favorite_border),
-                onPressed: () {
-                  product.isFavorite.toggle();
-                },
-              )),
+          leading: GetBuilder<ProductController>(
+            builder: (controller) => IconButton(
+              color: Theme.of(context).accentColor,
+              icon: Icon(controller.findById(product.id).isFavorite
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border),
+              onPressed: () {
+                controller.toggleFavouriteStatus(product.id);
+              },
+            ),
+          ),
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
             color: Theme.of(context).accentColor,
             onPressed: () {
               Get.find<CartController>()
                   .addItem(product.id, product.price, product.title);
+              Get.showSnackbar(GetBar(
+                  message: "Added item to cart!",
+                  duration: Duration(seconds: 3),
+                  mainButton: TextButton(
+                    child: Text(
+                      "UNDO",
+                      style: TextStyle(color: Colors.deepOrange),
+                    ),
+                    onPressed: () {
+                      Get.find<CartController>().removeSingleItem(product.id);
+                    },
+                  )));
             },
           ),
           backgroundColor: Colors.black87,

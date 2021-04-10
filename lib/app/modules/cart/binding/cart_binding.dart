@@ -6,6 +6,6 @@ class CartBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<CartController>(() => CartController());
-    Get.lazyPut<OrderController>(() => OrderController());
+    Get.put(OrderController(), permanent: true);
   }
 }

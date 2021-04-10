@@ -11,51 +11,51 @@ import 'package:shop_app/app/routes/route_management.dart';
 enum FilterOptions { Favourites, All }
 
 class ProductsOverviewScreen extends StatelessWidget {
-  var showFavPro = false.obs;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("MyShop"),
-          actions: <Widget>[
-            PopupMenuButton(
-              onSelected: (selectedValue) {
-                if (selectedValue == FilterOptions.Favourites) {
-                  showFavPro.value = true;
-                } else {
-                  showFavPro.value = false;
-                }
-              },
-              icon: Icon(Icons.more_vert),
-              itemBuilder: (_) => [
-                PopupMenuItem(
-                  child: Text("Only Favourites"),
-                  value: FilterOptions.Favourites,
+    return GetBuilder<ProductController>(
+        builder: (controller) => Scaffold(
+            appBar: AppBar(
+              title: Text("MyShop"),
+              actions: <Widget>[
+                PopupMenuButton(
+                  onSelected: (selectedValue) {
+                    if (selectedValue == FilterOptions.Favourites) {
+                      controller.toggleMenuItems();
+                    } else {
+                      controller.toggleMenuItems();
+                    }
+                  },
+                  icon: Icon(Icons.more_vert),
+                  itemBuilder: (_) => [
+                    PopupMenuItem(
+                      child: Text("Only Favourites"),
+                      value: FilterOptions.Favourites,
+                    ),
+                    PopupMenuItem(
+                      child: Text("Show All"),
+                      value: FilterOptions.All,
+                    )
+                  ],
                 ),
-                PopupMenuItem(
-                  child: Text("Show All"),
-                  value: FilterOptions.All,
-                )
+                GetBuilder<CartController>(
+                    builder: (_controller) => Badge(
+                        child: IconButton(
+                          icon: Icon(Icons.shopping_cart),
+                          onPressed: () {
+                            RoutesManagement.goToCartScreen();
+                            print(
+                              "itemcount = ${_controller.itemCount.toString()}",
+                            );
+                          },
+                        ),
+                        value: _controller.itemCount.toString()))
               ],
             ),
-            Obx(
-              () => Badge(
-                  child: IconButton(
-                    icon: Icon(Icons.shopping_cart),
-                    onPressed: () {
-                      RoutesManagement.goToCartScreen();
-                    },
-                  ),
-                  value: Get.find<CartController>().itemCount.toString()),
-            )
-          ],
-        ),
-        drawer: AppDrawer(),
-        body: GetX<ProductController>(
-          builder: (controller) {
-            return GridView.builder(
+            drawer: AppDrawer(),
+            body: GridView.builder(
                 padding: const EdgeInsets.all(10.0),
-                itemCount: showFavPro.value
+                itemCount: controller.showFavPro
                     ? controller.favouriteItems.length
                     : controller.productsList.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -65,12 +65,10 @@ class ProductsOverviewScreen extends StatelessWidget {
                     mainAxisSpacing: 10),
                 itemBuilder: (context, index) {
                   return ProductItem(
-                    product: showFavPro.value
+                    product: controller.showFavPro
                         ? controller.favouriteItems[index]
                         : controller.productsList[index],
                   );
-                });
-          },
-        ));
+                })));
   }
 }
